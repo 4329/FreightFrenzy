@@ -55,34 +55,53 @@ import com.qualcomm.robotcore.util.Range;
 public class BasicOpMode_Iterative extends OpMode
 {
     // Declare OpMode members.
+    RobotHardware robot   = new RobotHardware();   //declaration
+    RobotController robotController = new RobotController(robot);
+
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
+    // private DcMotor leftFrontDrive = null;
+    // private DcMotor leftBackDrive = null;
+    // private DcMotor rightFrontDrive = null;
+    // private DcMotor rightBackDrive = null;
+    //private DcMotor carouselMotor =null;
+
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
-        telemetry.addData("Status", "Initialized");
-
+        telemetry.addData("Status", "Initializing");
+        robot.init(hardwareMap);
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
 
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
+        // Control Hub Port 3
+        //leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
 
+        // Control Hub Port 1
+        //rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+
+        //  Control Hub Port 0
+        //leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
+
+        // Control Hub Port 2
+        //rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive"); //
+        // Expansion hub port 0
+        //carouselMotor = hardwareMap.get(DcMotor.class,"carousel_motor");
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        //leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        //rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        //leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        //rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        // Set up for using encoders for speed control
+        //leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -116,21 +135,52 @@ public class BasicOpMode_Iterative extends OpMode
 
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
-        double drive = -gamepad1.left_stick_y;
+        // Positive value of drive goes forward
+        double drive = -gamepad1.left_stick_y;   //Flip sign so that push up causes positive power for forward
+        // Positive value of turn goes right
         double turn  =  gamepad1.right_stick_x;
+        // Positive Left stick X strafes right
+        double strafe = gamepad1.left_stick_x;
+
+        telemetry.addData("Left Stick Y",gamepad1.left_stick_y);
+        telemetry.addData("Left Stick X",gamepad1.left_stick_x);
+        telemetry.addData("Right Stick Y",gamepad1.right_stick_y);
+        telemetry.addData("Right Stick X",gamepad1.right_stick_x);
+
+
+        telemetry.addData("dpad_left",gamepad2.dpad_left);
+        telemetry.addData("dpad_right",gamepad2.dpad_right);
+
+
+
         leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
         rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
 
-        // Tank Mode uses one stick to control each wheel.
-        // - This requires no math, but it is hard to drive forward slowly and keep straight.
-        // leftPower  = -gamepad1.left_stick_y ;
-        // rightPower = -gamepad1.right_stick_y ;
+        double leftFrontPower = Range.clip(strafe+drive+turn,-1,+1);
+        double leftBackPower = Range.clip(-strafe+drive+turn,-1,+1);
+        double rightFrontPower = Range.clip(-strafe+drive-turn,-1,+1);
+        double rightBackPower = Range.clip(strafe+drive-turn,-1,+1);
+
+
 
         // Send calculated power to wheels
-        leftFrontDrive.setPower(leftPower);
-        rightFrontDrive.setPower(rightPower);
-        leftBackDrive.setPower(leftPower);
-        rightBackDrive.setPower(rightPower);
+        robot.leftFrontDrive.setPower(leftFrontPower);
+        robot.rightFrontDrive.setPower(rightFrontPower);
+        robot.leftBackDrive.setPower(leftBackPower);
+        robot.rightBackDrive.setPower(rightBackPower);
+
+        // Use Dbap on Operator to enable carousel spin directions
+        if(gamepad2.dpad_left)
+        {
+           robot.carouselMotor.setPower(1);
+        }
+        if(gamepad2.dpad_right)
+        {
+            robot.carouselMotor.setPower(-1);
+        }
+
+
+
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
