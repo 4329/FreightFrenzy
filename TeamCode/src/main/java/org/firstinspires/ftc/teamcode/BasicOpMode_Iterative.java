@@ -29,12 +29,14 @@
 
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -57,14 +59,9 @@ public class BasicOpMode_Iterative extends OpMode
     // Declare OpMode members.
     RobotHardware robot   = new RobotHardware();   //declaration
     RobotController robotController = new RobotController(robot);
+    DriveSystem driveSystem = null;
 
     private ElapsedTime runtime = new ElapsedTime();
-    // private DcMotor leftFrontDrive = null;
-    // private DcMotor leftBackDrive = null;
-    // private DcMotor rightFrontDrive = null;
-    // private DcMotor rightBackDrive = null;
-    //private DcMotor carouselMotor =null;
-
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -103,6 +100,7 @@ public class BasicOpMode_Iterative extends OpMode
         //leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // Tell the driver that initialization is complete.
+        driveSystem = new DriveSystem(hardwareMap);
         telemetry.addData("Status", "Initialized");
     }
 
@@ -126,9 +124,6 @@ public class BasicOpMode_Iterative extends OpMode
      */
     @Override
     public void loop() {
-        // Setup a variable for each drive wheel to save power level for telemetry
-        double leftPower;
-        double rightPower;
 
         // Choose to drive using either Tank Mode, or POV Mode
         // Comment out the method that's not used.  The default below is POV.
@@ -145,29 +140,12 @@ public class BasicOpMode_Iterative extends OpMode
         telemetry.addData("Left Stick Y",gamepad1.left_stick_y);
         telemetry.addData("Left Stick X",gamepad1.left_stick_x);
         telemetry.addData("Right Stick Y",gamepad1.right_stick_y);
-        telemetry.addData("Right Stick X",gamepad1.right_stick_x);
 
+
+        driveSystem.Drive(-gamepad1.left_stick_y,gamepad1.right_stick_x,gamepad1.left_stick_x);
 
         telemetry.addData("dpad_left",gamepad2.dpad_left);
         telemetry.addData("dpad_right",gamepad2.dpad_right);
-
-
-
-        leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-        rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
-
-        double leftFrontPower = Range.clip(strafe+drive+turn,-1,+1);
-        double leftBackPower = Range.clip(-strafe+drive+turn,-1,+1);
-        double rightFrontPower = Range.clip(-strafe+drive-turn,-1,+1);
-        double rightBackPower = Range.clip(strafe+drive-turn,-1,+1);
-
-
-
-        // Send calculated power to wheels
-        robot.leftFrontDrive.setPower(leftFrontPower);
-        robot.rightFrontDrive.setPower(rightFrontPower);
-        robot.leftBackDrive.setPower(leftBackPower);
-        robot.rightBackDrive.setPower(rightBackPower);
 
         // Use Dbap on Operator to enable carousel spin directions
         if(gamepad2.dpad_left)
@@ -178,12 +156,14 @@ public class BasicOpMode_Iterative extends OpMode
         {
             robot.carouselMotor.setPower(-1);
         }
-
+        if((gamepad2.dpad_right == false) && (gamepad2.dpad_left == false ))
+        {
+            robot.carouselMotor.setPower(0);
+        }
 
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
     }
 
     /*
