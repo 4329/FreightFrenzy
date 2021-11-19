@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -7,12 +7,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 /**
  * Carousel turner spins a wheel to turn the carousel
  */
-public class CarouselTurnerSubsystem extends SubsystemBase{
+public class CarouselTurnerSystem extends SubsystemBase{
 
     private final DcMotor carouselMotor;
 
 
-    public CarouselTurnerSubsystem(final HardwareMap hMap, final String name){
+    public CarouselTurnerSystem(final HardwareMap hMap, final String name){
         carouselMotor = hMap.get(DcMotor.class, name);
     }
 

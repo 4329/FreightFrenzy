@@ -9,15 +9,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-public class ArmSpinnerSubsystem extends SubsystemBase {
+public class TubeSpinnerSystem extends SubsystemBase {
     private ServoEx servo;
-    public ArmSpinnerSubsystem(HardwareMap hw){
+    public TubeSpinnerSystem(HardwareMap hw){
             //Rev Robotics Smart Servo
             servo=new SimpleServo(
                     hw, "Arm_Spinner",
                     -135,135, AngleUnit.DEGREES);
     }
-    public double getposition(){
+    public double getPosition(){
         return servo.getPosition();
     }
 
