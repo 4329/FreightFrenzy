@@ -24,7 +24,7 @@ public class TestCommandOpmode extends CommandOpMode{
     public void initialize() {
         m_Operator = new GamepadEx(gamepad2);
         // tubeSpinner = new TubeSpinnerSystem(hardwareMap);
-        armSystem = new ArmSystem(hardwareMap);
+        // armSystem = new ArmSystem(hardwareMap);
         bButton = new GamepadButton(m_Operator,GamepadKeys.Button.B);
 
 

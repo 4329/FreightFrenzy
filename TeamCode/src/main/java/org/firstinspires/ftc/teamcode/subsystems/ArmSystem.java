@@ -15,12 +15,12 @@ public class ArmSystem extends SubsystemBase {
     private final double voltageAt90Degree=0.957;
     private final double voltsPerDegree = (voltageAt90Degree-voltageAtZeroDegree)/90;
 
-    public ArmSystem(HardwareMap hardwareMap){
-    armMotorLeft =hardwareMap.get(DcMotor.class,"arm_left");
-    armMotorRight =hardwareMap.get(DcMotor.class,"arm_right");
+    public ArmSystem(HardwareMap hardwareMap,String LeftMotorName, String RightMotorName, String PotName){
+    armMotorLeft =hardwareMap.get(DcMotor.class,LeftMotorName);
+    armMotorRight =hardwareMap.get(DcMotor.class,RightMotorName);
     armMotorLeft.setDirection(DcMotor.Direction.FORWARD);
     armMotorRight.setDirection(DcMotor.Direction.FORWARD);
-    armPot=hardwareMap.get(AnalogInput.class, "arm_pot");
+    armPot=hardwareMap.get(AnalogInput.class,PotName);
 
     armMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     armMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
