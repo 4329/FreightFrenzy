@@ -57,7 +57,7 @@ public class BasicOpMode_Iterative extends OpMode
 {
     // Declare OpMode members.
     RobotHardware robot   = new RobotHardware();   //declaration
-    RobotController robotController = new RobotController(robot);
+    // RobotController robotController = new RobotController(robot);
     DriveSystem driveSystem = null;
 
     private ElapsedTime runtime = new ElapsedTime();

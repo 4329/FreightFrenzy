@@ -21,7 +21,7 @@ public class ReportTelemetry  extends CommandBase {
 
     @Override
     public void execute() {
-        armSystem.ReportTelemetry(telemetry);
+        // armSystem.ReportTelemetry(telemetry);
         telemetry.update();
 
     }

@@ -33,29 +33,7 @@ public class ArmSystem extends SubsystemBase {
         armMotorRight.setPower(Power);
     }
 
-    public void  ReportTelemetry(Telemetry telemetry){
-        telemetry.addData("ArmLeftMotor Power", armMotorLeft.getPower());
-        telemetry.addData("ArmRightMotor Power",armMotorRight.getPower());
-    }
 
-    public void GoToAngle(double GoToAngle){
-        double upPower=1;
-        double downPower=-.1;
-        double holdPower=.01;
-
-        while (GetAngle()<GoToAngle){
-            armMotorRight.setPower(upPower);
-            armMotorLeft.setPower(upPower);
-        }
-        armMotorLeft.setPower(holdPower);
-        armMotorRight.setPower(holdPower);
-
-
-    }
-    public double GetAngle(){
-
-        return (armPot.getVoltage()-voltageAtZeroDegree)/voltsPerDegree;
-    }
     public void Stop(){
         armMotorLeft.setPower(0);
         armMotorRight.setPower(0);

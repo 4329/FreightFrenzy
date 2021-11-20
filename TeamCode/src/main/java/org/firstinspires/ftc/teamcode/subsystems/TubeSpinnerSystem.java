@@ -11,11 +11,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class TubeSpinnerSystem extends SubsystemBase {
     private ServoEx servo;
-    public TubeSpinnerSystem(HardwareMap hw){
+
+    public TubeSpinnerSystem(HardwareMap hw, String servoName){
             //Rev Robotics Smart Servo
-            servo=new SimpleServo(
-                    hw, "Arm_Spinner",
+
+            servo=new SimpleServo(hw, servoName,
                     -135,135, AngleUnit.DEGREES);
+
     }
     public double getPosition(){
         return servo.getPosition();
@@ -25,11 +27,12 @@ public class TubeSpinnerSystem extends SubsystemBase {
         servo.setPosition(servo.getPosition() + positionToMove);
     }
 
+    public void turnTubeToAngle(double angle){
+        servo.turnToAngle(angle,AngleUnit.DEGREES);
+    }
+
     public void rotate(double position){
         servo.rotateBy(position);
     }
-    @Override
-    public void setDefaultCommand(Command defaultCommand) {
 
-    }
 }

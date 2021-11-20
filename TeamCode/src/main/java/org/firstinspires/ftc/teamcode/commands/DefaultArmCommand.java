@@ -20,6 +20,7 @@ public class DefaultArmCommand extends CommandBase {
 
     @Override
     public void execute() {
+
         m_armSystem.setPower(m_powerMethod.getAsDouble());
     }
 }
