@@ -2,37 +2,50 @@ package org.firstinspires.ftc.teamcode.test;
 
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
 
-@TeleOp(name = "TestTubeSpinnerSystem",group = "Test")
+@TeleOp(name = "Test TubeSpinnerSystem",group = "3")
+@Disabled
 public class TestTubeSpinnerSystem extends OpMode {
-    private TubeSpinnerSystem SpinTube;
-    private Servo servoTest = null;
+    private TubeSpinnerSystem spinTube;
 
     @Override
     public void init() {
-        SpinTube=new  TubeSpinnerSystem(hardwareMap,"TubeSpinner");
-        servoTest =hardwareMap.get(Servo.class,"TubeSpinner");
-
-        SpinTube.movePosition(0);
+        spinTube =new  TubeSpinnerSystem(hardwareMap);
     }
 
 
     @Override
     public void loop() {
-        if (gamepad2.y == true) {
-            SpinTube.turnTubeToAngle(0.0);
+        double degreesToRotate = .5;
+        if (gamepad2.left_bumper){
+           spinTube.rotateTube(-degreesToRotate);
         }
-        else{
-            SpinTube.turnTubeToAngle(90);
+
+        if (gamepad2.right_bumper) {
+            // spinTube.rotateTube(degreesToRotate);
+            spinTube.rotateTube(degreesToRotate);
         }
-        telemetry.addData("TubeSpinner Position",SpinTube.getPosition());
-        telemetry.addData("TubeSpinner Angle",servoTest.getPosition());
+
+        if(gamepad2.y){
+            spinTube.setDegree(0);
+        }
+        if(gamepad2.b){
+            spinTube.setDegree(135);
+        }
+        if(gamepad2.x){
+            spinTube.setDegree(-135);
+        }
+        telemetry.addData("TubeSpinner Position", spinTube.getPosition());
+        telemetry.addData("TubeSpinner Angle",spinTube.getDegrees());
+        telemetry.addData("TubeSpinner Range",spinTube.getDegreeRange());
+
+        telemetry.update();
     }
 
 }

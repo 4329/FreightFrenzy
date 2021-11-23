@@ -8,31 +8,55 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.R;
+import org.firstinspires.ftc.teamcode.hardware.RevSmartServo;
 
 public class TubeSpinnerSystem extends SubsystemBase {
-    private ServoEx servo;
+    private RevSmartServo revSmartServo;
 
-    public TubeSpinnerSystem(HardwareMap hw, String servoName){
-            //Rev Robotics Smart Servo
 
-            servo=new SimpleServo(hw, servoName,
-                    -135,135, AngleUnit.DEGREES);
+    public TubeSpinnerSystem(HardwareMap hw, String servoName,double homeDegrees) {
+        //Rev Robotics Smart Servo
+        revSmartServo = new RevSmartServo(hw, servoName);
+        // turn to home degrees so that we know where Servo starts
+        revSmartServo.turnToAngle(homeDegrees);
 
     }
-    public double getPosition(){
-        return servo.getPosition();
+
+    public TubeSpinnerSystem(HardwareMap hardwareMap,double homeDegree) {
+        this(hardwareMap, "TubeSpinner",homeDegree);
     }
 
-    public void movePosition(double positionToMove){
-        servo.setPosition(servo.getPosition() + positionToMove);
+    public TubeSpinnerSystem(HardwareMap hardwareMap){
+        this(hardwareMap,0);
+    }
+    public void rotateTube(double degreeToRotate) {
+        revSmartServo.rotateByAngle(degreeToRotate, AngleUnit.DEGREES);
+
     }
 
-    public void turnTubeToAngle(double angle){
-        servo.turnToAngle(angle,AngleUnit.DEGREES);
+    public double getPosition() {
+        return revSmartServo.getPosition();
     }
 
-    public void rotate(double position){
-        servo.rotateBy(position);
+    public double getDegrees() {
+        return revSmartServo.getAngle(AngleUnit.DEGREES);
+    }
+
+    public double getDegreeRange() {
+        return revSmartServo.getAngleRange(AngleUnit.DEGREES);
+    }
+
+    public void setPosition(double position) {
+        revSmartServo.setPosition(position);
+    }
+
+    public void setDegree(double degree) {
+        revSmartServo.turnToAngle(degree, AngleUnit.DEGREES);
+    }
+
+    public void rotate(double position) {
+        revSmartServo.rotateBy(position);
     }
 
 }
