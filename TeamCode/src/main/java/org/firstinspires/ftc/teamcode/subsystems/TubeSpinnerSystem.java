@@ -20,7 +20,6 @@ public class TubeSpinnerSystem extends SubsystemBase {
         revSmartServo = new RevSmartServo(hw, servoName);
         // turn to home degrees so that we know where Servo starts
         revSmartServo.turnToAngle(homeDegrees);
-
     }
 
     public TubeSpinnerSystem(HardwareMap hardwareMap,double homeDegree) {

@@ -28,7 +28,7 @@ public class DriveSystem extends SubsystemBase {
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void Drive(float drive, float turn,float strafe){
+    public void Drive(double drive, double turn,double strafe){
         double leftFrontPower = Range.clip(strafe+drive+turn,-1,+1);
         double leftBackPower = Range.clip(-strafe+drive+turn,-1,+1);
         double rightFrontPower = Range.clip(-strafe+drive-turn,-1,+1);
@@ -39,18 +39,6 @@ public class DriveSystem extends SubsystemBase {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
     }
-
-    public void DriveByDistance(float drive,float distanceInches){
-
-        double wheelRotations=  distanceInches / (wheelDiamenterInches * Math.PI);
-        int startingEncoderPosition =  leftBackDrive.getCurrentPosition();
-
-        while (leftBackDrive.getCurrentPosition()< startingEncoderPosition+500){
-            Drive(drive,0,0);
-        }
-        Drive(0,0,0);
-    }
-
     @Override
     public void periodic(){
 

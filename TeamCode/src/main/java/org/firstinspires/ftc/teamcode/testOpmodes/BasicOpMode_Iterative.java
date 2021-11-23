@@ -27,9 +27,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.testOpmodes;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -51,12 +52,12 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSystem;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
-
+@TeleOp(name="Basic: Iterative OpMode", group="3")
+@Disabled
 public class BasicOpMode_Iterative extends OpMode
 {
     // Declare OpMode members.
-    RobotHardware robot   = new RobotHardware();   //declaration
+    // RobotHardware robot   = new RobotHardware();   //declaration
     // RobotController robotController = new RobotController(robot);
     DriveSystem driveSystem = null;
 
@@ -68,7 +69,7 @@ public class BasicOpMode_Iterative extends OpMode
     @Override
     public void init() {
         telemetry.addData("Status", "Initializing");
-        robot.init(hardwareMap);
+        // robot.init(hardwareMap);
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
@@ -149,15 +150,15 @@ public class BasicOpMode_Iterative extends OpMode
         // Use Dbap on Operator to enable carousel spin directions
         if(gamepad2.dpad_left)
         {
-           robot.carouselMotor.setPower(1);
+           // robot.carouselMotor.setPower(1);
         }
         if(gamepad2.dpad_right)
         {
-            robot.carouselMotor.setPower(-1);
+            // robot.carouselMotor.setPower(-1);
         }
         if((gamepad2.dpad_right == false) && (gamepad2.dpad_left == false ))
         {
-            robot.carouselMotor.setPower(0);
+            // robot.carouselMotor.setPower(0);
         }
 
 

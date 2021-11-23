@@ -4,16 +4,16 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
 
-public class DefaultTelemetry extends CommandBase {
+public class UpdateTelemetry extends CommandBase {
     TelemetrySystem telemetrySystem;
-    public DefaultTelemetry(TelemetrySystem telemetrySystem) {
+    public UpdateTelemetry(TelemetrySystem telemetrySystem) {
         this.telemetrySystem = telemetrySystem;
         addRequirements(telemetrySystem);
     }
 
     @Override
     public void initialize() {
-        telemetrySystem.update();
+        // telemetrySystem.update();
     }
 
     @Override

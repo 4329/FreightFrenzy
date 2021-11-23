@@ -15,7 +15,10 @@ public class ArmSystem extends SubsystemBase {
     private final double voltageAt90Degree=0.957;
     private final double voltsPerDegree = (voltageAt90Degree-voltageAtZeroDegree)/90;
 
-    public ArmSystem(HardwareMap hardwareMap,String LeftMotorName, String RightMotorName, String PotName){
+    public ArmSystem(HardwareMap hardwareMap,
+                     String LeftMotorName,
+                     String RightMotorName,
+                     String PotName){
     armMotorLeft =hardwareMap.get(DcMotor.class,LeftMotorName);
     armMotorRight =hardwareMap.get(DcMotor.class,RightMotorName);
     armMotorLeft.setDirection(DcMotor.Direction.FORWARD);
@@ -27,7 +30,11 @@ public class ArmSystem extends SubsystemBase {
     armMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     armMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
-
+    public ArmSystem(HardwareMap hardwareMap){
+        this(hardwareMap,"ArmRightMotor",
+                "ArmLeftMotor",
+                "ArmPot");
+    }
     public void setPower(double Power){
         armMotorLeft.setPower(Power);
         armMotorRight.setPower(Power);
