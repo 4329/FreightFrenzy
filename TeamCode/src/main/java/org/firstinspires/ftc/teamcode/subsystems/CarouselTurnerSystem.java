@@ -11,32 +11,17 @@ public class CarouselTurnerSystem extends SubsystemBase{
 
     private final DcMotor carouselMotor;
 
-
-    public CarouselTurnerSystem(final HardwareMap hMap, final String name){
-        carouselMotor = hMap.get(DcMotor.class, name);
+    public CarouselTurnerSystem(HardwareMap hardwareMap, final String name){
+        carouselMotor = hardwareMap.get(DcMotor.class, name);
     }
 
-    /**
-     * Spin Wheel Clockwise
-     */
-    public void spinClockwise() {
-        carouselMotor.setPower(1);
+    public CarouselTurnerSystem(HardwareMap hardwareMap){
+        this(hardwareMap,"CaroMotor");
     }
 
-    /**
-     * Spin Wheel CounterClockwise
-     */
-
-    public void spinCounterClockwise(){
-        carouselMotor.setPower(-1);
+    public void setPower(Double power){
+        carouselMotor.setPower(power);
     }
 
-    public void spinStop(){
-        carouselMotor.setPower(0);
-    }
-    @Override
-    public void periodic(){
-        // This method will be called once per scheduler run.
-    }
 
 }

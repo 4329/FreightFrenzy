@@ -10,13 +10,13 @@ public class DriveSystem extends SubsystemBase {
     private DcMotor rightFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightBackDrive = null;
-    private final double wheelDiamenterInches = 3.0;
+    private final double wheelDiameterInches = 3.0;
 
     public  DriveSystem(HardwareMap hardwareMap){
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "LeftFrontDrive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "RightFrontDrive");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "LeftBackDrive");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "RightBackDrive");
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);

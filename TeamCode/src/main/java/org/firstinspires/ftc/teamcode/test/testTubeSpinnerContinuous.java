@@ -8,7 +8,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.commands.DefaultArmCommand;
+import org.firstinspires.ftc.teamcode.commands.ArmContinuous;
 import org.firstinspires.ftc.teamcode.commands.RotateTubeContinuous;
 import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
 

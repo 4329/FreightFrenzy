@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -21,8 +22,8 @@ public class ArmSystem extends SubsystemBase {
                      String PotName){
     armMotorLeft =hardwareMap.get(DcMotor.class,LeftMotorName);
     armMotorRight =hardwareMap.get(DcMotor.class,RightMotorName);
-    armMotorLeft.setDirection(DcMotor.Direction.FORWARD);
-    armMotorRight.setDirection(DcMotor.Direction.FORWARD);
+    armMotorLeft.setDirection(DcMotor.Direction.REVERSE);
+    armMotorRight.setDirection(DcMotor.Direction.REVERSE);
     armPot=hardwareMap.get(AnalogInput.class,PotName);
 
     armMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -31,8 +32,8 @@ public class ArmSystem extends SubsystemBase {
     armMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public ArmSystem(HardwareMap hardwareMap){
-        this(hardwareMap,"ArmRightMotor",
-                "ArmLeftMotor",
+        this(hardwareMap,"ArmLeftMotor",
+                "ArmRightMotor",
                 "ArmPot");
     }
     public void setPower(double Power){

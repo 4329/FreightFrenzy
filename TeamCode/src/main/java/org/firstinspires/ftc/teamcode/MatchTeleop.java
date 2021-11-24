@@ -6,29 +6,34 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.checkerframework.checker.units.qual.A;
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.commands.ArmContinuous;
+import org.firstinspires.ftc.teamcode.commands.CaroContinuous;
 import org.firstinspires.ftc.teamcode.commands.DriveContinuous;
 import org.firstinspires.ftc.teamcode.commands.RotateTubeContinuous;
 import org.firstinspires.ftc.teamcode.commands.UpdateTelemetry;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
+import org.firstinspires.ftc.teamcode.subsystems.CarouselTurnerSystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSystem;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
 import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
 
 @TeleOp(name = "Match Teleop", group = "1")
 public class MatchTeleop extends CommandOpMode {
-    static Double ROTATE_DEGREES = 1.0;
+    static Double ROTATE_DEGREES = 0.1;
 
     DriveSystem driveSystem;
     TubeSpinnerSystem tubeSpinnerSystem;
     TelemetrySystem telemetrySystem;
     ArmSystem armSystem;
+    CarouselTurnerSystem carouselTurnerSystem;
 
     DriveContinuous driveContinuous;
     GamepadEx driver, operator;
     RotateTubeContinuous rotateTubeContinuous;
     ArmContinuous armContinuous;
     UpdateTelemetry updateTelemetry;
+    CaroContinuous caroContinuous;
 
     @Override
     public void initialize() {
@@ -39,11 +44,12 @@ public class MatchTeleop extends CommandOpMode {
         tubeSpinnerSystem = new TubeSpinnerSystem(hardwareMap);
         armSystem = new ArmSystem(hardwareMap);
         telemetrySystem = new TelemetrySystem(telemetry);
+        carouselTurnerSystem = new CarouselTurnerSystem(hardwareMap);
 
         driveContinuous = new DriveContinuous(driveSystem,
                 () -> -driver.getLeftY(),
-                () -> driver.getRightX(),
-                () -> driver.getLeftX()
+                () -> -driver.getRightX(),
+                () -> -driver.getLeftX()
         );
 
         rotateTubeContinuous = new RotateTubeContinuous(tubeSpinnerSystem,
@@ -56,6 +62,10 @@ public class MatchTeleop extends CommandOpMode {
                         return 0;
                     }
                 });
+
+        caroContinuous = new CaroContinuous(carouselTurnerSystem,
+                () -> 0.0);
+
 
         armContinuous = new ArmContinuous(armSystem,
                 () -> operator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) -

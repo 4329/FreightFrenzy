@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.commands.DefaultTelemetry;
+import org.firstinspires.ftc.teamcode.commands.UpdateTelemetry;
 import org.firstinspires.ftc.teamcode.commands.ExerciseTubeTurn;
 import org.firstinspires.ftc.teamcode.commands.NothingCommand;
 import org.firstinspires.ftc.teamcode.commands.RotateTubeToDegree;
@@ -26,7 +26,7 @@ public class testTubeSpinnerCmdAuto extends CommandOpMode {
     @Override
     public void initialize() {
         telemetrySystem  = new TelemetrySystem(telemetry);
-        telemetrySystem.setDefaultCommand(new DefaultTelemetry(telemetrySystem));
+        telemetrySystem.setDefaultCommand(new UpdateTelemetry(telemetrySystem));
 
         tubeSpinnerSystem = new TubeSpinnerSystem(hardwareMap);
         autoCommands = new SequentialCommandGroup(

@@ -23,12 +23,13 @@ public class TubeSpinnerSystem extends SubsystemBase {
     }
 
     public TubeSpinnerSystem(HardwareMap hardwareMap,double homeDegree) {
-        this(hardwareMap, "TubeSpinner",homeDegree);
+        this(hardwareMap, "TubeSpinnerServo",homeDegree);
     }
 
     public TubeSpinnerSystem(HardwareMap hardwareMap){
         this(hardwareMap,0);
     }
+
     public void rotateTube(double degreeToRotate) {
         revSmartServo.rotateByAngle(degreeToRotate, AngleUnit.DEGREES);
 
