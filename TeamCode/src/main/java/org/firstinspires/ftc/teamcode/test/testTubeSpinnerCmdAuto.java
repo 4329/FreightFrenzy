@@ -30,24 +30,24 @@ public class testTubeSpinnerCmdAuto extends CommandOpMode {
 
         tubeSpinnerSystem = new TubeSpinnerSystem(hardwareMap);
         autoCommands = new SequentialCommandGroup(
-                new RotateTubeToDegree(tubeSpinnerSystem, 0.0, telemetry),
-                new RotateTubeToDegree(tubeSpinnerSystem, 135.0, telemetry),
-                new RotateTubeToDegree(tubeSpinnerSystem, -135.0, telemetry),
-                new RotateTubeToDegree(tubeSpinnerSystem, 0.0, telemetry));
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, 0.0, true),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, 135.0, true),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, -135.0, true),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, 0.0, true));
 
         nothingauto = new SequentialCommandGroup(
                 new NothingCommand(telemetry, "Nothing 1",50000),
-                new RotateTubeToDegree(tubeSpinnerSystem, -135.0, telemetry),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, -135.0, true),
                 new NothingCommand(telemetry, "Nothing 2",50000),
-                new RotateTubeToDegree(tubeSpinnerSystem, 90.0, telemetry),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, 90.0, true),
                 new NothingCommand(telemetry, "Nothing 2.1",50000),
-                new RotateTubeToDegree(tubeSpinnerSystem, 45.0, telemetry),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, 45.0, true),
                 new NothingCommand(telemetry, "Nothing 2.2",50000),
-                new RotateTubeToDegree(tubeSpinnerSystem, 0.0, telemetry),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, 0.0, true),
                 new NothingCommand(telemetry, "Nothing 2.5",50000),
-                new RotateTubeToDegree(tubeSpinnerSystem, -135.0, telemetry),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, -135.0, true),
                 new NothingCommand(telemetry, "Nothing 3",5000),
-                new RotateTubeToDegree(tubeSpinnerSystem, 0.0, telemetry),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry, 0.0, true),
                 new NothingCommand(telemetry, "Nothing 4",5000));
 
 

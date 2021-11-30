@@ -10,10 +10,10 @@ public class ExerciseTubeTurn extends SequentialCommandGroup {
 
     public ExerciseTubeTurn(TubeSpinnerSystem tubeSpinnerSystem, Telemetry telemetry){
         addCommands(
-                new RotateTubeToDegree(tubeSpinnerSystem, 0.0,telemetry),
-                new RotateTubeToDegree(tubeSpinnerSystem,135.0,telemetry),
-                new RotateTubeToDegree(tubeSpinnerSystem,-135.0,telemetry),
-                new RotateTubeToDegree(tubeSpinnerSystem,0.0,telemetry)
+                new RotateTubeToDegree(tubeSpinnerSystem, telemetry,90.0,true),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry,135.0,true),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry,-135.0,true),
+                new RotateTubeToDegree(tubeSpinnerSystem,telemetry,0.0,true)
         );
     }
 }
