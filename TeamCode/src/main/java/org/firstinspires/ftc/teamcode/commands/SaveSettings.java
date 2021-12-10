@@ -4,29 +4,29 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
+import org.firstinspires.ftc.teamcode.subsystems.PropertySystem;
 
 import java.text.MessageFormat;
 import java.util.Formatter;
 
 public class SaveSettings extends CommandBase {
     ArmSystem armSystem;
+    PropertySystem propertySystem;
     Telemetry telemetry;
     Boolean saveResult=false;
-    public SaveSettings(ArmSystem armSystem, Telemetry telemetry) {
+    String configFilename;
+
+    public SaveSettings(String configFilename,ArmSystem armSystem, Telemetry telemetry) {
+        this.configFilename =configFilename;
         this.armSystem = armSystem;
         this.telemetry = telemetry;
+        propertySystem = new PropertySystem(configFilename);
     }
 
     @Override
     public void initialize() {
-        saveResult = armSystem.saveSettings();
-        telemetry.addLine(MessageFormat.format("Command {0}, (SaveSettings={1})",
-                this.getName(),
-                saveResult));
-    }
-
-    @Override
-    public void execute() {
+        saveResult = propertySystem.setProperty("",Double.toString(armSystem.getArmHomeDegrees()));
+        // ToDo - Ask tubeSpinner to save settings
         telemetry.addLine(MessageFormat.format("Command {0}, (SaveSettings={1})",
                 this.getName(),
                 saveResult));
@@ -34,6 +34,6 @@ public class SaveSettings extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

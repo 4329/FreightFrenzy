@@ -2,20 +2,16 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-public class ArmToAngle extends CommandBase {
-
+public class LoadSettings extends CommandBase {
+    private String configFilename;
+    
     @Override
     public void initialize() {
 
     }
 
     @Override
-    public void execute() {
-
-    }
-
-    @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.button.Button;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
@@ -16,6 +18,7 @@ import org.firstinspires.ftc.teamcode.commands.ArmContinuous;
 import org.firstinspires.ftc.teamcode.commands.CaroContinuous;
 import org.firstinspires.ftc.teamcode.commands.DriveContinuous;
 import org.firstinspires.ftc.teamcode.commands.RotateTubeContinuous;
+import org.firstinspires.ftc.teamcode.commands.SaveSettings;
 import org.firstinspires.ftc.teamcode.commands.UpdateTelemetry;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
 import org.firstinspires.ftc.teamcode.subsystems.CarouselTurnerSystem;
@@ -27,7 +30,8 @@ import java.util.function.BooleanSupplier;
 
 @TeleOp(name = "Match Teleop", group = "1")
 public class MatchTeleop extends CommandOpMode {
-    static Double ROTATE_DEGREES = 0.1;
+    static double ROTATE_DEGREES = 1.0;
+    static double DEFAULT_TUBESPINNER_HOMEDEGREE = 0.0;
 
     GamepadEx driver, operator;
     TriggerReader leftOperatorTriggerReader,rightOperatorTriggerReader;
@@ -53,7 +57,7 @@ public class MatchTeleop extends CommandOpMode {
         // Subsystems
         driveSystem = new DriveSystem(hardwareMap);
         tubeSpinnerSystem = new TubeSpinnerSystem(hardwareMap);
-        armSystem = new ArmSystem(hardwareMap);
+        armSystem = new ArmSystem(hardwareMap,tubeSpinnerSystem,telemetry);
         telemetrySystem = new TelemetrySystem(telemetry);
         carouselTurnerSystem = new CarouselTurnerSystem(hardwareMap);
 
@@ -68,7 +72,7 @@ public class MatchTeleop extends CommandOpMode {
                 .whenReleased(new RotateTubeContinuous(tubeSpinnerSystem,telemetry,
                         () -> 0,
                         () -> operator.getButton(GamepadKeys.Button.BACK)));
-        // Left Bumper register negative degrees command continous
+        // Left Bumper register negative degrees command continuous
         operator.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(new RotateTubeContinuous(tubeSpinnerSystem,telemetry,
                         () -> - ROTATE_DEGREES,
@@ -90,7 +94,7 @@ public class MatchTeleop extends CommandOpMode {
         );
 
 
-
+        // Rotate Tube using right and left bumpers
         rotateTubeContinuous = new RotateTubeContinuous(tubeSpinnerSystem, telemetry,
                 () -> {
                     if (operator.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
@@ -117,7 +121,7 @@ public class MatchTeleop extends CommandOpMode {
         // Arm commands
         // - Right Trigger - Go up continuous
         // - Left Trigger - Go down continuous
-        // - X Button - Go to home
+        // - X Button - Arm to pickup
         // - A Button - Level 1
         // - B Button - Level 2
         // - Y Button - Level 3
@@ -150,10 +154,21 @@ public class MatchTeleop extends CommandOpMode {
                         operator.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),
                 () -> operator.getButton(GamepadKeys.Button.BACK));
 
-        // Register default command to update telemetry
-        telemetrySystem.setDefaultCommand(new UpdateTelemetry(telemetrySystem));
+        // When Start button is pressed, save settings
+        operator.getGamepadButton(GamepadKeys.Button.START)
+                .and(operator.getGamepadButton(GamepadKeys.Button.BACK))
+                .whenActive(new ParallelCommandGroup(new InstantCommand(armSystem::saveSettings)));
+
+        // Move Tube to Carry Position
+        operator.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(new ParallelCommandGroup(
+                        new InstantCommand(armSystem::moveToPickup,armSystem),
+                        new InstantCommand(tubeSpinnerSystem::moveTubeToHome,tubeSpinnerSystem)));
+        // Register default command to update telemetry at top of next
+        // telemetrySystem.setDefaultCommand(new UpdateTelemetry(telemetrySystem));
 
         schedule(driveContinuous, caroContinuous);
-        register(telemetrySystem);
+        armSystem.setEnablePID(false);
+        register(telemetrySystem,armSystem);
     }
 }

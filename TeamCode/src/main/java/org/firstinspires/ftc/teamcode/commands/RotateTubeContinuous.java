@@ -42,10 +42,7 @@ public class RotateTubeContinuous extends CommandBase {
         }
         tubeSpinnerSystem.rotateTube(this.rotateDegreesSupplier.getAsDouble());
         if (this.addTelemetrySupplier.getAsBoolean() && (this.telemetry != null)) {
-            telemetry.addLine(
-                    MessageFormat.format("---{0} -> getDegrees={1}",
-                            this.getName(),
-                            this.tubeSpinnerSystem.getDegrees()));
+            telemetry.addLine(tubeSpinnerSystem.getTelemetry());
         }
     }
 
