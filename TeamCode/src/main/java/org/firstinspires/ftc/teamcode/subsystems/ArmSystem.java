@@ -23,8 +23,9 @@ import java.util.Properties;
 
 public class ArmSystem extends SubsystemBase {
     static double PICKUP_DEGREES=20.0;
-    private DcMotorEx armMotorLeft = null;
-    private DcMotorEx armMotorRight = null;
+   // private DcMotorEx armMotorLeft = null;
+   // private DcMotorEx armMotorRight = null;
+    private DcMotorEx armMotorSingle = null;
     private AnalogInput armPot = null;
     private TubeSpinnerSystem tubeSpinnerSystem;
     private final double voltageAtZeroDegree = 0.27;//voltage when arm is resting on ground
@@ -45,7 +46,7 @@ public class ArmSystem extends SubsystemBase {
     private Telemetry telemetry;
 
 
-    public ArmSystem(HardwareMap hardwareMap,
+   /* public ArmSystem(HardwareMap hardwareMap,
                      String LeftMotorName,
                      String RightMotorName,
                      String PotName,
@@ -61,8 +62,9 @@ public class ArmSystem extends SubsystemBase {
 
         armMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotorLeft.setVelocityPIDFCoefficients(10,6,0,0);
-        armMotorRight.setVelocityPIDFCoefficients(10,6,0,0);
+        //ToDo  - Need to tweak i coeff to help get arm moving quicker.
+        armMotorLeft.setVelocityPIDFCoefficients(10,12,0,0);
+        armMotorRight.setVelocityPIDFCoefficients(10,12,0,0);
         armMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -73,14 +75,16 @@ public class ArmSystem extends SubsystemBase {
         tubeSpinnerSystem.setDegree(tubeSpinnerSystem.getHomeDegrees());
         // this.isSettingsLoaded = loadSettings();
     }
-
+*/
     public ArmSystem(HardwareMap hardwareMap, TubeSpinnerSystem tubeSpinnerSystem, Telemetry telemetry) {
-        this(hardwareMap, "ArmLeftMotor",
-                "ArmRightMotor",
-                "ArmPot",
-                tubeSpinnerSystem,
-                telemetry
-        );
+        armMotorSingle = hardwareMap.get(DcMotorEx.class, "armMotorSingle");
+        armMotorSingle.setDirection(DcMotorSimple.Direction.FORWARD);
+        armMotorSingle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.tubeSpinnerSystem = tubeSpinnerSystem;
+        this.telemetry = telemetry;
+        armPot = hardwareMap.get(AnalogInput.class, "ArmPot");
+        loadSettings();
+
     }
     public double getArmHomeDegrees() {
         return armHomeDegrees;
@@ -91,14 +95,12 @@ public class ArmSystem extends SubsystemBase {
     }
 
     public void setPower(double Power) {
-        armMotorLeft.setPower(Power);
-        armMotorRight.setPower(Power);
+        armMotorSingle.setPower(Power);
     }
 
-
+// Hi Mr. Sheck. DJ was coding here.. This comment was made on 12/21/21
     public void Stop() {
-        armMotorLeft.setPower(0);
-        armMotorRight.setPower(0);
+       armMotorSingle.setPower(0);
 
     }
 
@@ -209,23 +211,23 @@ public class ArmSystem extends SubsystemBase {
     public void periodic() {
         double output= pController.calculate(getArmDegrees());
         lastOutput=output;
-        telemetry.addLine(this.getTelemetry());
-        telemetry.addData("targetDegrees",targetDegrees);
-        telemetry.addData("output",output);
-        telemetry.addData("getArmDegrees",getArmDegrees());
-        telemetry.addData("setPoint",pController.getSetPoint());
-        telemetry.addData("enablePID",enablePID);
-        telemetry.addData("gravityPower",this.gravityAdjustPower());
-        telemetry.addData("leftMotorPosition",armMotorLeft.getCurrentPosition());
-        telemetry.addData("leftMotorVelocity",armMotorLeft.getVelocity(AngleUnit.DEGREES));
-        telemetry.addData("leftMotorPID",armMotorLeft.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+//        telemetry.addLine(this.getTelemetry());
+//        telemetry.addData("targetDegrees",targetDegrees);
+//        telemetry.addData("output",output);
+//        telemetry.addData("getArmDegrees",getArmDegrees());
+//        telemetry.addData("setPoint",pController.getSetPoint());
+//        telemetry.addData("enablePID",enablePID);
+//        telemetry.addData("gravityPower",this.gravityAdjustPower());
+//        telemetry.addData("leftMotorPosition",armMotorLeft.getCurrentPosition());
+//        telemetry.addData("leftMotorVelocity",armMotorLeft.getVelocity(AngleUnit.DEGREES));
+//        telemetry.addData("leftMotorPID",armMotorLeft.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
 
         if (enablePID){
             double maxPower=.125;
             double power = Math.min(Math.abs(output),maxPower) * Math.signum(output);
             power = power+gravityAdjustPower();
             telemetry.addData("power",power);
-            this.setPower(power);
+          //this.setPower(power);
         }
 
     }

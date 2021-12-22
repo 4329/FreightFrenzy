@@ -9,10 +9,14 @@ import org.firstinspires.ftc.teamcode.hardware.RevSmartServo;
 public class CheeseKickerSystem extends SubsystemBase {
     static double HOLD_DEGREES=-90;
     static double KICK_DEGREES =90;
+    static double HOLD_POSITION = 0.73;
+    static double KICK_POSITION = 0.0;
+    static double HOME_DEGREES = 0;
     private RevSmartServo kickerServo;
 
-    public CheeseKickerSystem(HardwareMap hardwareMap,String kickerServoName) {
-        kickerServo = new RevSmartServo(hardwareMap,kickerServoName);
+    public CheeseKickerSystem(HardwareMap hardwareMap) {
+        kickerServo = new RevSmartServo(hardwareMap,"CheeseKickerServo");
+        holdCheese();
     }
 
     public void setPosition(double position){
@@ -29,12 +33,12 @@ public class CheeseKickerSystem extends SubsystemBase {
 
     public void  holdCheese(){
         // ToDo - Need to figure out hold degrees
-        this.setDegree(HOLD_DEGREES);
+        this.setPosition(HOLD_POSITION);
     }
 
     public void kickCheese(){
         // ToDo - Need to figure out kick degrees
-        this.setDegree(KICK_DEGREES);
+        this.setPosition(KICK_POSITION);
     }
 
 }

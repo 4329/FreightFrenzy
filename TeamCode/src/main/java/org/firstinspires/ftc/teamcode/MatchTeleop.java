@@ -16,12 +16,14 @@ import org.checkerframework.checker.units.qual.A;
 import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.commands.ArmContinuous;
 import org.firstinspires.ftc.teamcode.commands.CaroContinuous;
+import org.firstinspires.ftc.teamcode.commands.DriveByPower;
 import org.firstinspires.ftc.teamcode.commands.DriveContinuous;
 import org.firstinspires.ftc.teamcode.commands.RotateTubeContinuous;
 import org.firstinspires.ftc.teamcode.commands.SaveSettings;
 import org.firstinspires.ftc.teamcode.commands.UpdateTelemetry;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
 import org.firstinspires.ftc.teamcode.subsystems.CarouselTurnerSystem;
+import org.firstinspires.ftc.teamcode.subsystems.CheeseKickerSystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSystem;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
 import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
@@ -40,6 +42,7 @@ public class MatchTeleop extends CommandOpMode {
     TelemetrySystem telemetrySystem;
     ArmSystem armSystem;
     CarouselTurnerSystem carouselTurnerSystem;
+    CheeseKickerSystem cheeseKickerSystem;
 
     DriveContinuous driveContinuous;
 
@@ -60,6 +63,7 @@ public class MatchTeleop extends CommandOpMode {
         armSystem = new ArmSystem(hardwareMap,tubeSpinnerSystem,telemetry);
         telemetrySystem = new TelemetrySystem(telemetry);
         carouselTurnerSystem = new CarouselTurnerSystem(hardwareMap);
+        cheeseKickerSystem= new CheeseKickerSystem(hardwareMap);
 
         // Bind RotateTube commands
         // Right Bumper Rotates Positive
@@ -138,6 +142,7 @@ public class MatchTeleop extends CommandOpMode {
                         () -> operator.getButton(GamepadKeys.Button.BACK)));
         Trigger rightOperatorTrigger = new Trigger(
                 () -> {
+                  // if greater than 0.1 then it trigger command; command is active (ArmCone
                     if (operator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1){
                         return true;
                     } else {
@@ -149,10 +154,10 @@ public class MatchTeleop extends CommandOpMode {
                         () -> operator.getButton(GamepadKeys.Button.BACK)));
 
 
-        armContinuous = new ArmContinuous(armSystem, telemetry,
-                () -> operator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) -
-                        operator.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),
-                () -> operator.getButton(GamepadKeys.Button.BACK));
+        //armContinuous = new ArmContinuous(armSystem, telemetry,
+                //() -> operator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) -
+               //         operator.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),
+                //() -> operator.getButton(GamepadKeys.Button.BACK));
 
         // When Start button is pressed, save settings
         operator.getGamepadButton(GamepadKeys.Button.START)
@@ -166,6 +171,37 @@ public class MatchTeleop extends CommandOpMode {
                         new InstantCommand(tubeSpinnerSystem::moveTubeToHome,tubeSpinnerSystem)));
         // Register default command to update telemetry at top of next
         // telemetrySystem.setDefaultCommand(new UpdateTelemetry(telemetrySystem));
+
+        DriveByPower driveStrafeLeft = new DriveByPower(driveSystem,
+                0.0,0.0,1.0,
+                telemetry);
+        // D=Pad Left - Strafe Left
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(new DriveByPower(driveSystem,
+                        0.0,0.0,0.4,
+                        telemetry))
+                .whenReleased(driveContinuous);
+        // D-Pan Right - Straft Right
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(new DriveByPower(driveSystem,
+                        0.0,0.0,-0.4,
+                        telemetry))
+                .whenReleased(driveContinuous);
+        // D-Pad Up - Forward
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new DriveByPower(driveSystem,
+                        -0.5,0.0,0.0,
+                        telemetry))
+                .whenReleased(driveContinuous);
+        // D-Pad Down - Reverse
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new DriveByPower(driveSystem,
+                        0.5,0.0,0.0,
+                        telemetry))
+                .whenReleased(driveContinuous);
+
+        operator.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(new InstantCommand(cheeseKickerSystem::kickCheese,cheeseKickerSystem));
 
         schedule(driveContinuous, caroContinuous);
         armSystem.setEnablePID(false);

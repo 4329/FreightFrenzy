@@ -1,30 +1,33 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ScheduleCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.checkerframework.checker.units.qual.A;
+import org.firstinspires.ftc.teamcode.commands.ArmAboveDegree;
 import org.firstinspires.ftc.teamcode.commands.ArmToDegree;
+import org.firstinspires.ftc.teamcode.commands.DriveDistance;
 import org.firstinspires.ftc.teamcode.commands.StrafeByTime;
 import org.firstinspires.ftc.teamcode.commands.StrafeContinuous;
 import org.firstinspires.ftc.teamcode.commands.UpdateTelemetry;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
+import org.firstinspires.ftc.teamcode.subsystems.CheeseKickerSystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSystem;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
 import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
 
-@Autonomous(name = "BlueAutoCrawl", group = "1")
-public class BlueAutoCrawl extends CommandOpMode {
+@Autonomous(name = "Blue Park Only", group = "1")
+public class BlueParkOnly extends CommandOpMode {
 
-    private StrafeByTime strafeByTime;
     private DriveSystem driveSystem;
     private TubeSpinnerSystem tubeSpinnerSystem;
     private ArmSystem armSystem;
     private TelemetrySystem telemetrySystem;
-    private StrafeContinuous strafeContinuous;
     private ArmToDegree armToDegree;
+    private CheeseKickerSystem cheeseKickerSystem;
 
 
     @Override
@@ -32,25 +35,18 @@ public class BlueAutoCrawl extends CommandOpMode {
         this.driveSystem = new DriveSystem(hardwareMap);
         tubeSpinnerSystem = new TubeSpinnerSystem(hardwareMap);
         armSystem = new ArmSystem(hardwareMap,tubeSpinnerSystem,telemetry);
+        cheeseKickerSystem = new CheeseKickerSystem(hardwareMap);
         this.telemetrySystem = new TelemetrySystem(telemetry);
 
-        armToDegree = new ArmToDegree(10, armSystem,telemetry);
+        armToDegree = new ArmToDegree(45, armSystem,telemetry);
 
-        this.strafeByTime = new StrafeByTime(driveSystem,
-                1,
-                1,
-                 telemetry,true);
-        this.strafeContinuous = new StrafeContinuous(driveSystem,1,telemetry,true);
+        DriveDistance driveDistance = new DriveDistance(driveSystem,
+                0,0,.5,24,telemetry);
 
-        // strafeContinuous.withTimeout(1000);
-
-
-        // telemetrySystem.setDefaultCommand(new UpdateTelemetry(telemetrySystem));
-
-
-        // schedule(new SequentialCommandGroup(strafeContinuous));
-        // schedule(new SequentialCommandGroup(strafeByTime));
-        schedule(new SequentialCommandGroup(armToDegree));
+        schedule(new SequentialCommandGroup(new InstantCommand(armSystem::moveToPickup),
+                new ArmAboveDegree(armSystem,20.0,telemetry),
+                driveDistance
+                ));
         register(telemetrySystem);
 
     }

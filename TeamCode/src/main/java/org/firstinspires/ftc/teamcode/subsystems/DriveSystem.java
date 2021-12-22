@@ -2,25 +2,32 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class DriveSystem extends SubsystemBase {
-    private DcMotor leftFrontDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightBackDrive = null;
-    private final double wheelDiameterInches = 3.0;
+    private DcMotorEx leftFrontDrive = null;
+    private DcMotorEx rightFrontDrive = null;
+    private DcMotorEx leftBackDrive = null;
+    private DcMotorEx rightBackDrive = null;
+    private final double wheelDiameterInches = 75.0/26.5;
+    private final double encoderCountsPerRevolution = 28;
+    private final double encoderPositionsPerRevolution = encoderCountsPerRevolution * 4;
+    private Telemetry telemetry;
 
     public  DriveSystem(HardwareMap hardwareMap){
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "LeftFrontDrive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "RightFrontDrive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "LeftBackDrive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "RightBackDrive");
+        leftFrontDrive = hardwareMap.get(DcMotorEx.class, "LeftFrontDrive");
+        rightFrontDrive = hardwareMap.get(DcMotorEx.class, "RightFrontDrive");
+        leftBackDrive = hardwareMap.get(DcMotorEx.class, "LeftBackDrive");
+        rightBackDrive = hardwareMap.get(DcMotorEx.class, "RightBackDrive");
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+
 
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -39,8 +46,15 @@ public class DriveSystem extends SubsystemBase {
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
     }
+
+    public double getRightFrontEncoder(){
+        return Math.abs(rightFrontDrive.getCurrentPosition());
+    }
     @Override
     public void periodic(){
 
+    }
+
+    public void resetEncoders(){
     }
 }
