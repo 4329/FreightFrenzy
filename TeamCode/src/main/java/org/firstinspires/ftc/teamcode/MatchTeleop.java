@@ -22,9 +22,11 @@ import org.firstinspires.ftc.teamcode.commands.RotateTubeContinuous;
 import org.firstinspires.ftc.teamcode.commands.SaveSettings;
 import org.firstinspires.ftc.teamcode.commands.UpdateTelemetry;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
+import org.firstinspires.ftc.teamcode.subsystems.BucketSystem;
 import org.firstinspires.ftc.teamcode.subsystems.CarouselTurnerSystem;
 import org.firstinspires.ftc.teamcode.subsystems.CheeseKickerSystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSystem;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
 import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
 
@@ -64,26 +66,28 @@ public class MatchTeleop extends CommandOpMode {
         telemetrySystem = new TelemetrySystem(telemetry);
         carouselTurnerSystem = new CarouselTurnerSystem(hardwareMap);
         cheeseKickerSystem= new CheeseKickerSystem(hardwareMap);
+        BucketSystem bucketSystem= new BucketSystem(hardwareMap, telemetry);
+        IntakeSystem intakeSystem= new IntakeSystem(hardwareMap, telemetry);
 
         // Bind RotateTube commands
         // Right Bumper Rotates Positive
         // Left Bumper Rotates Negative
         // No Bumper Stops Rotate
         operator.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(new RotateTubeContinuous(tubeSpinnerSystem,telemetry,
-                        () -> ROTATE_DEGREES,
-                        () -> operator.getButton(GamepadKeys.Button.BACK)))
-                .whenReleased(new RotateTubeContinuous(tubeSpinnerSystem,telemetry,
-                        () -> 0,
-                        () -> operator.getButton(GamepadKeys.Button.BACK)));
+                .whenPressed(new InstantCommand(bucketSystem::up,bucketSystem))
+                .whenReleased(new InstantCommand(bucketSystem::stop, bucketSystem));
         // Left Bumper register negative degrees command continuous
         operator.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenPressed(new RotateTubeContinuous(tubeSpinnerSystem,telemetry,
-                        () -> - ROTATE_DEGREES,
-                        () -> operator.getButton(GamepadKeys.Button.BACK)))
-                .whenReleased(new RotateTubeContinuous(tubeSpinnerSystem,telemetry,
-                        () -> 0,
-                        () -> operator.getButton(GamepadKeys.Button.BACK)));
+                .whenPressed(new InstantCommand(bucketSystem::down, bucketSystem))
+                .whenReleased(new InstantCommand(bucketSystem::stop, bucketSystem));
+        //Dpad up expel "Intake system"
+        operator.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new InstantCommand(intakeSystem::expel, intakeSystem))
+                .whenReleased(new InstantCommand(intakeSystem::stop, intakeSystem));
+        //Dpad down takeIn "Intake system"
+        operator.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new InstantCommand(intakeSystem::takeIn, intakeSystem))
+                .whenReleased(new InstantCommand(intakeSystem::stop, intakeSystem));
         // Left and Right Bumper together resets to home
         operator.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .and(operator.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER))
