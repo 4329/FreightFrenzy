@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.commands.ArmContinuous;
 import org.firstinspires.ftc.teamcode.commands.SaveSettings;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
+import org.firstinspires.ftc.teamcode.subsystems.BucketSystem;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
 import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
 
@@ -21,7 +22,8 @@ public class SettingsMode extends CommandOpMode {
 
         // Subsystems
         TubeSpinnerSystem tubeSpinnerSystem= new TubeSpinnerSystem(hardwareMap);
-        ArmSystem armSystem=new ArmSystem(hardwareMap,tubeSpinnerSystem,telemetry);
+        BucketSystem bucketSystem = new BucketSystem(hardwareMap,telemetry);
+        ArmSystem armSystem=new ArmSystem(hardwareMap,bucketSystem,  telemetry);
         TelemetrySystem telemetrySystem=new TelemetrySystem(telemetry);
 
         // Create Trigger for operator trigger over threshold so that a command can be scheduled

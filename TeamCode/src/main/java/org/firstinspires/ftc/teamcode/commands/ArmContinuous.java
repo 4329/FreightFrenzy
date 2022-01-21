@@ -33,7 +33,7 @@ public class ArmContinuous extends CommandBase {
         {
             telemetry.addData("--- Command", this.getName());
             telemetry.addData("Arm Power",armPowerSupplier.getAsDouble());
-            telemetry.addData("ArmSystem",armSystem.getTelemetry());
+            // telemetry.addData("ArmSystem",armSystem.getTelemetry());
         }
         armSystem.setEnablePID(false);
         armSystem.setPower(armPowerSupplier.getAsDouble());

@@ -9,6 +9,13 @@ public class TelemetrySystem extends SubsystemBase {
     public boolean enableTelemetry=false;
     private int periodicCount=0;
 
+    enum TelemetryLevel {
+        MATCH,
+        CONFIG,
+        DIAGNOSTIC,
+        DEBUG
+    }
+
     public TelemetrySystem(Telemetry telemetry) {
         this.telemetry=telemetry;
         // Make Telemetry update faster than default 250ms. May need to change this back if things go too slow

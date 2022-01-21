@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -13,6 +14,7 @@ public class CarouselTurnerSystem extends SubsystemBase{
 
     public CarouselTurnerSystem(HardwareMap hardwareMap, final String name){
         carouselMotor = hardwareMap.get(DcMotor.class, name);
+        carouselMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public CarouselTurnerSystem(HardwareMap hardwareMap){

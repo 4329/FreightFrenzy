@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.commands.ArmAboveDegree;
 import org.firstinspires.ftc.teamcode.commands.ArmToDegree;
 import org.firstinspires.ftc.teamcode.commands.DriveDistance;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
+import org.firstinspires.ftc.teamcode.subsystems.BucketSystem;
 import org.firstinspires.ftc.teamcode.subsystems.CheeseKickerSystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSystem;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
 public class RedParkOnly extends CommandOpMode {
     private DriveSystem driveSystem;
     private TubeSpinnerSystem tubeSpinnerSystem;
+    private BucketSystem bucketSystem;
     private ArmSystem armSystem;
     private TelemetrySystem telemetrySystem;
     private ArmToDegree armToDegree;
@@ -28,7 +30,7 @@ public class RedParkOnly extends CommandOpMode {
     public void initialize() {
         this.driveSystem = new DriveSystem(hardwareMap);
         tubeSpinnerSystem = new TubeSpinnerSystem(hardwareMap);
-        armSystem = new ArmSystem(hardwareMap, tubeSpinnerSystem, telemetry);
+        armSystem = new ArmSystem(hardwareMap,bucketSystem, telemetry);
         cheeseKickerSystem = new CheeseKickerSystem(hardwareMap);
         this.telemetrySystem = new TelemetrySystem(telemetry);
 

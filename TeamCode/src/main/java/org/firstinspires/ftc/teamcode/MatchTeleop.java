@@ -1,84 +1,85 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.variable.CustomVariable;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.button.Button;
-import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.checkerframework.checker.units.qual.A;
 import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.commands.ArmContinuous;
 import org.firstinspires.ftc.teamcode.commands.CaroContinuous;
 import org.firstinspires.ftc.teamcode.commands.DriveByPower;
 import org.firstinspires.ftc.teamcode.commands.DriveContinuous;
-import org.firstinspires.ftc.teamcode.commands.RotateTubeContinuous;
-import org.firstinspires.ftc.teamcode.commands.SaveSettings;
-import org.firstinspires.ftc.teamcode.commands.UpdateTelemetry;
+import org.firstinspires.ftc.teamcode.commands.DriveMecanum;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
 import org.firstinspires.ftc.teamcode.subsystems.BucketSystem;
+import org.firstinspires.ftc.teamcode.subsystems.CameraSystem;
 import org.firstinspires.ftc.teamcode.subsystems.CarouselTurnerSystem;
-import org.firstinspires.ftc.teamcode.subsystems.CheeseKickerSystem;
+import org.firstinspires.ftc.teamcode.subsystems.ConfigSystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSystem;
+import org.firstinspires.ftc.teamcode.subsystems.IMUSystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSystem;
+import org.firstinspires.ftc.teamcode.subsystems.MecDriveSystem;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
-import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
-
-import java.util.function.BooleanSupplier;
 
 @TeleOp(name = "Match Teleop", group = "1")
 public class MatchTeleop extends CommandOpMode {
-    static double ROTATE_DEGREES = 1.0;
-    static double DEFAULT_TUBESPINNER_HOMEDEGREE = 0.0;
+    // FtcDashboard dashboard = FtcDashboard.getInstance();
 
     GamepadEx driver, operator;
-    TriggerReader leftOperatorTriggerReader,rightOperatorTriggerReader;
+    TriggerReader leftOperatorTriggerReader, rightOperatorTriggerReader;
     DriveSystem driveSystem;
-    TubeSpinnerSystem tubeSpinnerSystem;
+
     TelemetrySystem telemetrySystem;
     ArmSystem armSystem;
     CarouselTurnerSystem carouselTurnerSystem;
-    CheeseKickerSystem cheeseKickerSystem;
+
 
     DriveContinuous driveContinuous;
 
-    RotateTubeContinuous rotateTubeContinuous;
-    ArmContinuous armContinuous;
-    UpdateTelemetry updateTelemetry;
     CaroContinuous caroContinuous;
 
     @Override
     public void initialize() {
+        CustomVariable customVariable = FtcDashboard.getInstance().getConfigRoot();
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        IMUSystem imuSystem = new IMUSystem(hardwareMap, telemetry);
+        MecDriveSystem mecDriveSystem = new MecDriveSystem(hardwareMap, imuSystem, telemetry);
         // gamepads
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
 
         // Subsystems
-        driveSystem = new DriveSystem(hardwareMap);
-        tubeSpinnerSystem = new TubeSpinnerSystem(hardwareMap);
-        armSystem = new ArmSystem(hardwareMap,tubeSpinnerSystem,telemetry);
+        BucketSystem bucketSystem = new BucketSystem(hardwareMap, telemetry);
+        // driveSystem = new DriveSystem(hardwareMap);
+        armSystem = new ArmSystem(hardwareMap, bucketSystem, telemetry);
         telemetrySystem = new TelemetrySystem(telemetry);
         carouselTurnerSystem = new CarouselTurnerSystem(hardwareMap);
-        cheeseKickerSystem= new CheeseKickerSystem(hardwareMap);
-        BucketSystem bucketSystem= new BucketSystem(hardwareMap, telemetry);
-        IntakeSystem intakeSystem= new IntakeSystem(hardwareMap, telemetry);
+        IntakeSystem intakeSystem = new IntakeSystem(hardwareMap, telemetry);
+        // CameraSystem cameraSystem = new CameraSystem(hardwareMap,"frontcam", telemetry);
+        ConfigSystem configSystem = new ConfigSystem(FtcDashboard.getInstance().getConfigRoot(),
+                telemetry);
+        try {
+            configSystem.load();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-        // Bind RotateTube commands
-        // Right Bumper Rotates Positive
-        // Left Bumper Rotates Negative
-        // No Bumper Stops Rotate
         operator.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(new InstantCommand(bucketSystem::up,bucketSystem))
+                .whileHeld(new InstantCommand(bucketSystem::up,bucketSystem))
                 .whenReleased(new InstantCommand(bucketSystem::stop, bucketSystem));
         // Left Bumper register negative degrees command continuous
         operator.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenPressed(new InstantCommand(bucketSystem::down, bucketSystem))
+                .whileHeld(new InstantCommand(bucketSystem::down, bucketSystem))
                 .whenReleased(new InstantCommand(bucketSystem::stop, bucketSystem));
         //Dpad up expel "Intake system"
         operator.getGamepadButton(GamepadKeys.Button.DPAD_UP)
@@ -88,34 +89,14 @@ public class MatchTeleop extends CommandOpMode {
         operator.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(intakeSystem::takeIn, intakeSystem))
                 .whenReleased(new InstantCommand(intakeSystem::stop, intakeSystem));
-        // Left and Right Bumper together resets to home
-        operator.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .and(operator.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenActive(new RotateTubeContinuous(tubeSpinnerSystem,telemetry,
-                        () -> 0,
-                        () -> operator.getButton(GamepadKeys.Button.BACK)));
-        // Continuous Commands
-        driveContinuous = new DriveContinuous(driveSystem,
+
+
+
+        DriveMecanum driveMecanumCommand = new DriveMecanum(mecDriveSystem,
                 () -> -driver.getLeftY(),
-                () -> -driver.getRightX(),
-                () -> -driver.getLeftX()
-        );
-
-
-        // Rotate Tube using right and left bumpers
-        rotateTubeContinuous = new RotateTubeContinuous(tubeSpinnerSystem, telemetry,
-                () -> {
-                    if (operator.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                        return ROTATE_DEGREES;
-                    } else if (operator.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-                        return -ROTATE_DEGREES;
-                    } else {
-                        return 0;
-                    }
-                },
-                () -> operator.getButton((GamepadKeys.Button.BACK))
-        );
-
+                () -> driver.getRightX(),
+                () -> driver.getLeftX(),
+                () -> driver.getButton(GamepadKeys.Button.LEFT_BUMPER));
         // Carousel Command - Continuous
         caroContinuous = new CaroContinuous(carouselTurnerSystem, telemetry,
                 () -> {
@@ -127,41 +108,36 @@ public class MatchTeleop extends CommandOpMode {
         );
 
         // Arm commands
-        // - Right Trigger - Go up continuous
-        // - Left Trigger - Go down continuous
+        // - Right Bumper - Go up continuous
+        // - Left Bumper - Go down continuous
         // - X Button - Arm to pickup
         // - A Button - Level 1
         // - B Button - Level 2
         // - Y Button - Level 3
         Trigger leftOperatorTrigger = new Trigger(
                 () -> {
-                    if (operator.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1){
+                    if (operator.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {
                         return true;
                     } else {
                         return false;
                     }
                 })
-                .whenActive(new ArmContinuous(armSystem,telemetry,
-                        () -> - operator.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),
+                .whenActive(new ArmContinuous(armSystem, telemetry,
+                        () -> -operator.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),
                         () -> operator.getButton(GamepadKeys.Button.BACK)));
         Trigger rightOperatorTrigger = new Trigger(
                 () -> {
-                  // if greater than 0.1 then it trigger command; command is active (ArmCone
-                    if (operator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1){
+                    // if greater than 0.1 then it trigger command; command is active (ArmCone
+                    if (operator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {
                         return true;
                     } else {
                         return false;
                     }
                 })
-                .whenActive(new ArmContinuous(armSystem,telemetry,
+                .whenActive(new ArmContinuous(armSystem, telemetry,
                         () -> operator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER),
                         () -> operator.getButton(GamepadKeys.Button.BACK)));
 
-
-        //armContinuous = new ArmContinuous(armSystem, telemetry,
-                //() -> operator.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) -
-               //         operator.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER),
-                //() -> operator.getButton(GamepadKeys.Button.BACK));
 
         // When Start button is pressed, save settings
         operator.getGamepadButton(GamepadKeys.Button.START)
@@ -171,44 +147,95 @@ public class MatchTeleop extends CommandOpMode {
         // Move Tube to Carry Position
         operator.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(new ParallelCommandGroup(
-                        new InstantCommand(armSystem::moveToPickup,armSystem),
-                        new InstantCommand(tubeSpinnerSystem::moveTubeToHome,tubeSpinnerSystem)));
+                        new InstantCommand(armSystem::goLevel2, armSystem),
+                        new InstantCommand(bucketSystem::level, bucketSystem)));
+        operator.getGamepadButton(GamepadKeys.Button.A)
+                .whenPressed(new ParallelCommandGroup(
+                        new InstantCommand(armSystem::goLevel1, armSystem),
+                        new InstantCommand(bucketSystem::level, bucketSystem)));
+        operator.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(new ParallelCommandGroup(
+                        new InstantCommand(armSystem::goLevel3, armSystem),
+                        new InstantCommand(bucketSystem::level, bucketSystem)));
+
         // Register default command to update telemetry at top of next
         // telemetrySystem.setDefaultCommand(new UpdateTelemetry(telemetrySystem));
 
-        DriveByPower driveStrafeLeft = new DriveByPower(driveSystem,
-                0.0,0.0,1.0,
-                telemetry);
+        // DriveByPower driveStrafeLeft = new DriveByPower(driveSystem,
+        //        0.0,0.0,1.0,
+        //        telemetry);
         // D=Pad Left - Strafe Left
+        //Slooooooooooooooooow
         driver.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenPressed(new DriveByPower(driveSystem,
-                        0.0,0.0,0.4,
+                .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER))
+                .whenActive(new DriveByPower(mecDriveSystem,
+                        0.0, 0.0, -0.2,
                         telemetry))
-                .whenReleased(driveContinuous);
-        // D-Pan Right - Straft Right
+                .whenInactive(driveMecanumCommand);
+
+        //Normal (;
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
+                .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).negate())
+                .whenActive(new DriveByPower(mecDriveSystem,
+                        0.0, 0.0, -0.8,
+                        telemetry))
+                .whenInactive(driveMecanumCommand);
+
+        // D-Pan Right - Strafe Right
         driver.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new DriveByPower(driveSystem,
-                        0.0,0.0,-0.4,
+                .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).negate())
+                .whenActive(new DriveByPower(mecDriveSystem,
+                        0.0, 0.0, 0.8,
                         telemetry))
-                .whenReleased(driveContinuous);
+                //Sloooooooooooooooooooow
+                .whenInactive(driveMecanumCommand);
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
+                .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER))
+                .whenActive(new DriveByPower(mecDriveSystem,
+                        0.0, 0.0, 0.2,
+                        telemetry))
+                .whenInactive(driveMecanumCommand);
         // D-Pad Up - Forward
         driver.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenPressed(new DriveByPower(driveSystem,
-                        -0.5,0.0,0.0,
+                .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).negate())
+                .whenActive(new DriveByPower(mecDriveSystem,
+                        -0.75, 0.0, 0.0,
                         telemetry))
-                .whenReleased(driveContinuous);
+                .whenInactive(driveMecanumCommand);
+        //Sloooooooooooooooow
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER))
+                .whenActive(new DriveByPower(mecDriveSystem,
+                        -0.25, 0.0, 0.0,
+                        telemetry))
+                .whenInactive(driveMecanumCommand);
         // D-Pad Down - Reverse
         driver.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(new DriveByPower(driveSystem,
-                        0.5,0.0,0.0,
+                .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).negate())
+                .whenActive(new DriveByPower(mecDriveSystem,
+                        0.75, 0.0, 0.0,
                         telemetry))
-                .whenReleased(driveContinuous);
+                .whenInactive(driveMecanumCommand);
+        //Sloooooooooooooow
+        driver.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER))
+                .whenActive(new DriveByPower(mecDriveSystem,
+                        0.25, 0.0, 0.0,
+                        telemetry))
+                .whenInactive(driveMecanumCommand);
 
-        operator.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new InstantCommand(cheeseKickerSystem::kickCheese,cheeseKickerSystem));
+        driver.getGamepadButton(GamepadKeys.Button.B)
+                .toggleWhenPressed(new InstantCommand(mecDriveSystem::enableFieldCentric),
+                        new InstantCommand(mecDriveSystem::disableFieldCentric),true);
 
-        schedule(driveContinuous, caroContinuous);
+        driver.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(new InstantCommand(imuSystem::zeroHeading));
+        // schedule(driveContinuous, caroContinuous);
+        schedule(driveMecanumCommand, caroContinuous);
         armSystem.setEnablePID(false);
-        register(telemetrySystem,armSystem);
+        // Registered subsystems will have their Periodic method called
+        register(telemetrySystem, armSystem,
+                bucketSystem, imuSystem,
+                intakeSystem, mecDriveSystem);
     }
 }
