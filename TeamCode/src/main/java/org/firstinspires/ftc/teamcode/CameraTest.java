@@ -15,12 +15,9 @@ public class CameraTest extends CommandOpMode {
     @Override
     public void initialize() {
         Telemetry multipleTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        TelemetrySystem telemetrySystem = new TelemetrySystem(telemetry);
+        TelemetrySystem telemetrySystem = new TelemetrySystem(multipleTelemetry);
         CameraSystem cameraSystem = new CameraSystem(hardwareMap,"frontcam",multipleTelemetry);
         cameraSystem.enableObjectDetection();
-
-
-
         register(telemetrySystem, cameraSystem);
     }
 }

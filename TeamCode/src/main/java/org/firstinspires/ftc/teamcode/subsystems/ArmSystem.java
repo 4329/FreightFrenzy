@@ -4,7 +4,6 @@ import android.os.Environment;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.controller.PController;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,7 +12,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 import java.io.File;
@@ -21,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Properties;
 
 @Config
@@ -30,12 +27,22 @@ public class ArmSystem extends SubsystemBase {
 
     public static double PICKUP_DEGREES = 20.0;
     public double MAX_ARM_DEGREES = 55.0;
-    public static double LEVEL_1_DEGREES = 10;
+    public static double TRAVEL_DEGREES=5;
+    public static double LEVEL_1_DEGREES = 15;
     public static double LEVEL_2_DEGREES = 30;
     public static double LEVEL_3_DEGREES = 50;
     public static double MAX_ARM_POWER = 0.75;
     public static double kP = 0.05;
     public static double kI= 0.01;
+
+    public enum ArmPosition {
+        FLOOR,
+        TRAVEL,
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        UNKNOWN
+    }
 
     private DcMotorEx armMotorSingle = null;
     private AnalogInput armPot = null;
@@ -119,9 +126,9 @@ public class ArmSystem extends SubsystemBase {
             props.load(reader);
             this.armHomeDegrees = Double.valueOf(props.getProperty("armHomeDegrees", "45.0"));
             this.bucketSystem.setHomeEncoderPosition(
-                    Double.valueOf(props.getProperty(
+                    Integer.valueOf(props.getProperty(
                             "bucketHomeEncoderPosition",
-                            "0.0")));
+                            "0")));
 
             reader.close();
             return true;
@@ -149,7 +156,7 @@ public class ArmSystem extends SubsystemBase {
             Properties props = new Properties();
             props.setProperty("armHomeDegrees", Double.toString(this.armHomeDegrees));
             props.setProperty("bucketHomeEncoderPosition",
-                    Double.toString(this.bucketSystem.getEncoderPosition()));
+                    Integer.toString(this.bucketSystem.getEncoderPosition()));
             //props.setProperty("tubeSpinnerHomeDegrees", Double.toString(this.tubeSpinnerSystem.getHomeDegrees()));
             // props.setProperty("armHomeDegrees", "90.0");
             FileWriter writer = new FileWriter(configFile);
@@ -180,13 +187,51 @@ public class ArmSystem extends SubsystemBase {
     }
 
     public void goLevel2() {
-        setTargetDegrees(LEVEL_2_DEGREES);
+        goToPosition(ArmPosition.LEVEL2);
+        //setTargetDegrees(LEVEL_2_DEGREES);
     }
 
     public void goLevel3() {
         setTargetDegrees(LEVEL_3_DEGREES);
     }
 
+    public void goToPosition(ArmPosition armPosition){
+        switch (armPosition){
+            case FLOOR:
+                setTargetDegrees(0);
+                break;
+            case TRAVEL:
+                setTargetDegrees(TRAVEL_DEGREES);
+                break;
+            case LEVEL1:
+                setTargetDegrees(LEVEL_1_DEGREES);
+                break;
+            case LEVEL2:
+                setTargetDegrees(LEVEL_2_DEGREES);
+                break;
+            case LEVEL3:
+                setTargetDegrees(LEVEL_3_DEGREES);
+                break;
+
+        }
+    }
+
+    public ArmPosition currentArmPosition(){
+        final int degreeTolerance =2;
+        if(Math.abs(getArmDegreesFromHome()-0)<degreeTolerance){
+            return ArmPosition.FLOOR;
+        } else if (Math.abs(getArmDegreesFromHome()-TRAVEL_DEGREES)<degreeTolerance){
+            return ArmPosition.TRAVEL;
+        } else if (Math.abs(getArmDegreesFromHome()-LEVEL_1_DEGREES)<degreeTolerance){
+            return ArmPosition.LEVEL1;
+        } else if (Math.abs(getArmDegreesFromHome()-LEVEL_2_DEGREES)<degreeTolerance){
+            return ArmPosition.LEVEL2;
+        } else if (Math.abs(getArmDegreesFromHome()-LEVEL_3_DEGREES)<degreeTolerance){
+            return ArmPosition.LEVEL3;
+        } else {
+            return  ArmPosition.UNKNOWN;
+        }
+    }
     public void setEnablePID(boolean enablePID) {
         this.enablePID = enablePID;
 
@@ -194,6 +239,7 @@ public class ArmSystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
         double power;
         // double output = pController.calculate(getArmDegrees());
         double output = pController.calculate(getArmDegreesFromHome());
@@ -204,12 +250,13 @@ public class ArmSystem extends SubsystemBase {
             double maxPower = MAX_ARM_POWER;
             power = Math.min(Math.abs(output), maxPower) * Math.signum(output);
             //power = power + gravityAdjustPower();
-            telemetry.addData("power", power);
+            // telemetry.addData("power", power);
             this.setPower(power);
         } else {
             power = 0;
             if (getArmDegrees() >= MAX_ARM_DEGREES) Stop();
         }
+
         switch (TELEMETRY_LEVEL) {
             case DEBUG:
                 telemetry.addData(this.getName() + ":PIDpower", power);
@@ -218,6 +265,7 @@ public class ArmSystem extends SubsystemBase {
                 telemetry.addData(this.getName() + ":output", output);
                 telemetry.addData(this.getName() + ":armPower", armMotorSingle.getPower());
                 telemetry.addData(this.getName() + ":setPoint", pController.getSetPoint());
+                telemetry.addData(this.getName()+":",this.currentArmPosition());
             case DIAGNOSTIC:
                 telemetry.addData(this.getName() + ":getCurrent", armMotorSingle.getCurrent(CurrentUnit.AMPS));
                 telemetry.addData(this.getName() + ":getPower", armMotorSingle.getPower());

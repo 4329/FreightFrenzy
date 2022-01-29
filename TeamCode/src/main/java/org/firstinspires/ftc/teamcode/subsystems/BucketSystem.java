@@ -13,22 +13,31 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 @Config
 public class BucketSystem extends SubsystemBase {
     public static TelemetrySystem.TelemetryLevel TELEMETRY_LEVEL= TelemetrySystem.TelemetryLevel.MATCH;
-    public static double homeEncoderPosition;
+    private int homeEncoderPosition=0;
     private Telemetry telemetry;
     private double bucketHomeEncoderPosition=0;
     // public static double BUCKET_MOTOR_POWER=0.25;
-    public static double BUCKET_UP_POWER=0.5;
-    public static double BUCKET_DOWN_POWER = -0.5;
-    public static int UP_POSITION_CHANGE = 50;
+    private static double BUCKET_UP_POWER=0.5;
+    private static int UP_POSITION_CHANGE = 50;
 
     private DcMotorEx bucketMotor;
+    private final int ENCODERPositionsPerMotorRotation=28*2;
+    private final int GEARRatio =75;
+    private final double POSITIONS_PER_DEGREE = (ENCODERPositionsPerMotorRotation*GEARRatio) /360.0;
+    public boolean atPosition =false;
+
+
 
     @Override
     public void periodic() {
 
         if(bucketMotor.getCurrentPosition() != bucketMotor.getTargetPosition()){
+            atPosition =false;
+            // If not currently at position, then tell motor PID to run to position
             bucketMotor.setPower(BUCKET_UP_POWER);
             bucketMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        } else {
+            atPosition =true;
         }
 
         // telemetry
@@ -38,16 +47,15 @@ public class BucketSystem extends SubsystemBase {
             case DIAGNOSTIC:
                 telemetry.addData(this.getName()+":getCurrent",bucketMotor.getCurrent(CurrentUnit.AMPS));
                 telemetry.addData(this.getName()+":getPower",bucketMotor.getPower());
-
+                telemetry.addData(this.getName()+":getCurrentPosition",bucketMotor.getCurrentPosition());
+                telemetry.addData(this.getName()+":getTargetPosition",bucketMotor.getTargetPosition());
+                telemetry.addData(this.getName()+":bucketAngle",this.getBucketAngleFromHomePosition());
+                telemetry.addData(this.getName()+":atPosition",this.atPosition);
+                telemetry.addData(this.getName()+":POSITIONS_PER_DEGREE",this.POSITIONS_PER_DEGREE);
             case CONFIG:
                 // telemetry.addData(this.getName()+":BUCKET_MOTOR_POWER:",BUCKET_MOTOR_POWER);
                 telemetry.addData(this.getName()+":getHomeEncoderPosition",this.getHomeEncoderPosition());
             case MATCH:
-                // telemetry.addData(this.getName()+":Command:",this.getCurrentCommand());
-                telemetry.addData(this.getName()+":getCurrentPosition",bucketMotor.getCurrentPosition());
-                telemetry.addData(this.getName()+":getTargetPosition",bucketMotor.getTargetPosition());
-
-
                 break;
         }
 
@@ -59,20 +67,29 @@ public class BucketSystem extends SubsystemBase {
         bucketMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         bucketMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bucketMotor.setTargetPosition(bucketMotor.getCurrentPosition());
-
-        // resetMotor();
-        // setHomeEncoderPosition();
+        setHomeEncoderPosition(bucketMotor.getCurrentPosition());
     }
 
-    public void setHomeEncoderPosition(double newHomeEncoderPosition){
-        homeEncoderPosition = newHomeEncoderPosition;
+    public double getBucketAngleFromHomePosition(){
+        int deltaPositionFromHome = bucketMotor.getCurrentPosition()- homeEncoderPosition;
+        return deltaPositionFromHome/ POSITIONS_PER_DEGREE;
+    }
+
+    public void  setBucketAngleFromHomePosition(double bucketAngleToSet){
+        // Assumes zero degrees for home
+        int positionForAngle = (int) (bucketAngleToSet*POSITIONS_PER_DEGREE)+ homeEncoderPosition;
+        bucketMotor.setTargetPosition(positionForAngle);
+    }
+
+    public void setHomeEncoderPosition(int homeEncoderPosition){
+        this.homeEncoderPosition = homeEncoderPosition;
     }
 
     public double getHomeEncoderPosition(){
         return homeEncoderPosition;
     }
 
-    public double getEncoderPosition(){
+    public int getEncoderPosition(){
         return  bucketMotor.getCurrentPosition() ;
     }
 
@@ -80,19 +97,10 @@ public class BucketSystem extends SubsystemBase {
     public void up(){
 
         bucketMotor.setTargetPosition(bucketMotor.getCurrentPosition() + UP_POSITION_CHANGE);
-        // bucketMotor.setPower(BUCKET_UP_POWER);
-        // bucketMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        // while (bucketMotor.isBusy()){}
     }
 
     public void down(){
         bucketMotor.setTargetPosition(bucketMotor.getCurrentPosition() - UP_POSITION_CHANGE);
-
-        // bucketMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // bucketMotor.setPower(BUCKET_DOWN_POWER);
-        // bucketMotor.setTargetPosition(bucketMotor.getCurrentPosition() +\- UP_POSITION_CHANGE);
-        // bucketMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
     }
 
     public void level(){}

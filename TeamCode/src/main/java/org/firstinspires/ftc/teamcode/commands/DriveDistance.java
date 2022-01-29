@@ -33,8 +33,7 @@ public class DriveDistance  extends CommandBase {
     @Override
     public void execute() {
         driveSystem.Drive(this.forwardPower,this.rotatePower, this.strafePower);
-        telemetry.addData("rightFrontEncoder",driveSystem.getRightFrontEncoder());
-        telemetry.addData("distanceTraveled",distanceTraveled());
+
     }
 
     @Override
@@ -44,7 +43,10 @@ public class DriveDistance  extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return distanceTraveled() > distanceInches;
+        telemetry.addLine(this.getName()+":running");
+        telemetry.addData(this.getName()+":rightFrontEncoder",driveSystem.getRightFrontEncoder());
+        telemetry.addData(this.getName()+":distanceTraveled",distanceTraveled());
+        return distanceTraveled() >= distanceInches;
     }
 
     public DriveDistance(DriveSystem driveSystem, double forwardPower, double rotatePower,
