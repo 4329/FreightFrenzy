@@ -169,7 +169,7 @@ public class MatchTeleop extends CommandOpMode {
         driver.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
                 .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER))
                 .whenActive(new DriveByPower(mecDriveSystem,
-                        0.0, 0.0, -0.2,
+                        0.0, 0.0, -0.35,
                         telemetry))
                 .whenInactive(driveMecanumCommand);
 
@@ -192,7 +192,7 @@ public class MatchTeleop extends CommandOpMode {
         driver.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
                 .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER))
                 .whenActive(new DriveByPower(mecDriveSystem,
-                        0.0, 0.0, 0.2,
+                        0.0, 0.0, 0.35,
                         telemetry))
                 .whenInactive(driveMecanumCommand);
         // D-Pad Up - Forward
@@ -206,7 +206,7 @@ public class MatchTeleop extends CommandOpMode {
         driver.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER))
                 .whenActive(new DriveByPower(mecDriveSystem,
-                        -0.25, 0.0, 0.0,
+                        -0.35, 0.0, 0.0,
                         telemetry))
                 .whenInactive(driveMecanumCommand);
         // D-Pad Down - Reverse
@@ -220,7 +220,7 @@ public class MatchTeleop extends CommandOpMode {
         driver.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .and(driver.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER))
                 .whenActive(new DriveByPower(mecDriveSystem,
-                        0.25, 0.0, 0.0,
+                        0.35, 0.0, 0.0,
                         telemetry))
                 .whenInactive(driveMecanumCommand);
 

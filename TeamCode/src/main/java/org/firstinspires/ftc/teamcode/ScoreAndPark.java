@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.DriveDistance;
@@ -13,7 +14,8 @@ import org.firstinspires.ftc.teamcode.subsystems.BucketSystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSystem;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
 
-@Autonomous(name = "Score and Park",group = "2")
+@Disabled
+@Autonomous(name = "Score and Park",group = "3")
 public class ScoreAndPark extends CommandOpMode {
     @Override
     public void initialize() {

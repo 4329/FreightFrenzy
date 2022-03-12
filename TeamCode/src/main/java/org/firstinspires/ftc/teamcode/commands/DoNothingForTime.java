@@ -8,12 +8,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class DoNothingForTime extends CommandBase {
     private int timeToTakeInMilliseconds=0;
     private Telemetry telemetry;
-    private ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS) ;
     private boolean runOnce=false;
 
     @Override
     public void execute() {
         if (!runOnce){
+            elapsedTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
             elapsedTime.startTime();
             runOnce=true;
         }

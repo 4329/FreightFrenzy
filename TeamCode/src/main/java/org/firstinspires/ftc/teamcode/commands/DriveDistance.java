@@ -27,7 +27,7 @@ public class DriveDistance  extends CommandBase {
     }
 
     private double distanceTraveled(){
-        return Math.abs((driveSystem.getRightFrontEncoder() - startPosition)/ positionsPerRevolution * wheelCircInches);
+        return Math.abs((driveSystem.getRightFrontEncoder() - startPosition))/ positionsPerRevolution * wheelCircInches;
     }
 
     @Override

@@ -21,7 +21,7 @@ import java.util.List;
 public class CameraSystem extends SubsystemBase {
     public static boolean isObjectDetectionEnabled = true;
     public static TelemetrySystem.TelemetryLevel telemetryLevel = TelemetrySystem.TelemetryLevel.MATCH;
-    public static double minConfidence = 0.50;
+    public static double minConfidence = 0.65;
     public static double minHeightWidthRatio = 1.1;
 
     public enum ObjectDirection {

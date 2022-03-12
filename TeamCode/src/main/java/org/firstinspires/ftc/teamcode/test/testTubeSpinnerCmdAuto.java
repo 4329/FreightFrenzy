@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,7 +17,8 @@ import org.firstinspires.ftc.teamcode.commands.RotateTubeToDegree;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
 import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
 
-@Autonomous(name = "Test TubeSpinnerCmd Auto", group = "3")
+@Disabled
+@Autonomous(name = "Test TubeSpinnerCmd Auto", group = "4")
 public class testTubeSpinnerCmdAuto extends CommandOpMode {
     private TubeSpinnerSystem tubeSpinnerSystem;
     private RotateTubeToDegree rotateTubeToDegree;

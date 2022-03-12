@@ -13,7 +13,9 @@ import org.firstinspires.ftc.teamcode.commands.ArmToPosition;
 import org.firstinspires.ftc.teamcode.commands.BucketToAngle;
 import org.firstinspires.ftc.teamcode.commands.DoNothingForTime;
 import org.firstinspires.ftc.teamcode.commands.DriveDistance;
+import org.firstinspires.ftc.teamcode.commands.EjectCube;
 import org.firstinspires.ftc.teamcode.commands.ScanForCube;
+import org.firstinspires.ftc.teamcode.subsystems.AAutoSystem;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSystem;
 import org.firstinspires.ftc.teamcode.subsystems.BucketSystem;
 import org.firstinspires.ftc.teamcode.subsystems.CameraSystem;
@@ -67,7 +69,7 @@ public class BlueStorageHubAuto extends CommandOpMode {
         // Object Unknown - Level 3
         SequentialCommandGroup moveBucketForLevel = new SequentialCommandGroup(
                 new ConditionalCommand(
-                        new BucketToAngle(bucketSystem, 25, telemetry).withTimeout(3000),
+                        new BucketToAngle(bucketSystem, 15, telemetry).withTimeout(3000),
                         new DoNothingForTime(0, telemetry),
                         () -> {
                             return cameraSystem.lastObjectDirection == CameraSystem.ObjectDirection.LEFT;
@@ -75,14 +77,14 @@ public class BlueStorageHubAuto extends CommandOpMode {
                 ),
                 new ConditionalCommand(
 
-                        new BucketToAngle(bucketSystem, 25, telemetry).withTimeout(3000),
+                        new BucketToAngle(bucketSystem, 35, telemetry).withTimeout(3000),
                         new DoNothingForTime(0, telemetry),
                         () -> {
                             return cameraSystem.lastObjectDirection == CameraSystem.ObjectDirection.RIGHT;
                         }
                 ),
                 new ConditionalCommand(
-                        new BucketToAngle(bucketSystem, 25, telemetry).withTimeout(3000),
+                        new BucketToAngle(bucketSystem, 35, telemetry).withTimeout(3000),
                         new DoNothingForTime(0, telemetry),
                         () -> {
                             return cameraSystem.lastObjectDirection == CameraSystem.ObjectDirection.UNKNOWN;
@@ -96,14 +98,14 @@ public class BlueStorageHubAuto extends CommandOpMode {
         );*/
 
         // Negative Strafe Power goes right
-        DriveDistance strafeToHub = new DriveDistance(driveSystem, 0, 0, -.3, 28, telemetry);
+        DriveDistance strafeToHub = new DriveDistance(driveSystem, 0, 0, -.4, 29.0, telemetry);
 
 
         // Negative forward power is forward
         SequentialCommandGroup forwardToHub = new SequentialCommandGroup(
                 new ConditionalCommand(
                         // Object left  - Level 1
-                        new DriveDistance(driveSystem, -.3, 0, .0, 23, telemetry),
+                        new DriveDistance(driveSystem, -.3, 0, .0, 21, telemetry),
                         new DoNothingForTime(0, telemetry),
                         () -> {
                             return cameraSystem.lastObjectDirection == CameraSystem.ObjectDirection.LEFT;
@@ -111,7 +113,7 @@ public class BlueStorageHubAuto extends CommandOpMode {
                 ),
                 new ConditionalCommand(
                         // Object Right - Level 2
-                        new DriveDistance(driveSystem, -.3, 0, 0, 26, telemetry),
+                        new DriveDistance(driveSystem, -.3, 0, 0, 23.5, telemetry),
                         new DoNothingForTime(0, telemetry),
                         () -> {
                             return cameraSystem.lastObjectDirection == CameraSystem.ObjectDirection.RIGHT;
@@ -119,7 +121,7 @@ public class BlueStorageHubAuto extends CommandOpMode {
                 ),
                 new ConditionalCommand(
                         // Object Unknown - Level 3
-                        new DriveDistance(driveSystem, -.3, 0, 0, 27, telemetry),
+                        new DriveDistance(driveSystem, -.3, 0, 0, 25.5, telemetry),
                         new DoNothingForTime(0, telemetry),
                         () -> {
                             return cameraSystem.lastObjectDirection == CameraSystem.ObjectDirection.UNKNOWN;
@@ -137,7 +139,7 @@ public class BlueStorageHubAuto extends CommandOpMode {
                 ),
                 new ConditionalCommand(
                         // Object Right - Level 2
-                        new DriveDistance(driveSystem, .3, 0, 0, 27, telemetry),
+                        new DriveDistance(driveSystem, .3, 0, 0, 24, telemetry),
                         new DoNothingForTime(0, telemetry),
                         () -> {
                             return cameraSystem.lastObjectDirection == CameraSystem.ObjectDirection.RIGHT;
@@ -145,7 +147,7 @@ public class BlueStorageHubAuto extends CommandOpMode {
                 ),
                 new ConditionalCommand(
                         // Object Unknown - Level 3
-                        new DriveDistance(driveSystem, .3, 0, 0, 27, telemetry),
+                        new DriveDistance(driveSystem, .3, 0, 0, 25.5, telemetry),
                         new DoNothingForTime(0, telemetry),
                         () -> {
                             return cameraSystem.lastObjectDirection == CameraSystem.ObjectDirection.UNKNOWN;
@@ -153,23 +155,25 @@ public class BlueStorageHubAuto extends CommandOpMode {
                 )
         );
 
-        DriveDistance strafeToStorage = new DriveDistance(driveSystem, 0, 0, .3, 48, telemetry);
+        DriveDistance strafeToStorage = new DriveDistance(driveSystem, 0, 0, .3, 53, telemetry);
 
-        DriveDistance forwardFromWall = new DriveDistance(driveSystem, -.2, 0, 0, .5, telemetry);
+        DriveDistance forwardFromWall = new DriveDistance(driveSystem, -.3, 0, 0, .5, telemetry);
 
         schedule(new SequentialCommandGroup(
-                        new ScanForCube(cameraSystem, telemetry, true).withTimeout(2000),
-                        moveArmToLevel,
+                        new ScanForCube(cameraSystem, telemetry, true).withTimeout(3000),
                         moveBucketForLevel,
+                        new DoNothingForTime(AAutoSystem.autoDelayMilliseconds, telemetry),
                         forwardFromWall,
                         strafeToHub,
-                        forwardToHub,
-                        // new InstantCommand(intakeSystem::expel, intakeSystem),
-                        // new DoNothingForTime(1000, telemetry),
-                        // new InstantCommand(intakeSystem::stop, intakeSystem),
-                        // reverseToWall,
-                        // strafeToStorage,
-                        new DoNothingForTime(0,telemetry)
+                        moveArmToLevel,
+                        forwardToHub.withTimeout(2000),
+                        new EjectCube(intakeSystem).withTimeout(1000),
+                        new DriveDistance(driveSystem, .2, 0, 0, 2, telemetry),
+                        new InstantCommand(armSystem::goLevel2, armSystem),
+                        reverseToWall,
+                        forwardFromWall,
+                        strafeToStorage.withTimeout(6600),
+                        new DoNothingForTime(0, telemetry)
                 )
         );
     }

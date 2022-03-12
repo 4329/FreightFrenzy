@@ -9,8 +9,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Config
 public class AAutoSystem extends SubsystemBase {
-    public static boolean redAlliance = false;
-    public static boolean blueAlliance = false;
+    public static int autoDelayMilliseconds=8000;
+    private static boolean redAlliance = false;
+    private static boolean blueAlliance = false;
     public static TelemetrySystem.TelemetryLevel telemetryLevel = TelemetrySystem.TelemetryLevel.MATCH;
 
     private Telemetry telemetry;

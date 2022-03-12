@@ -50,7 +50,7 @@ public class RedParkOnly extends CommandOpMode {
 /*        schedule(new SequentialCommandGroup(new InstantCommand(armSystem::moveToPickup),
                 new ArmAboveDegree(armSystem, 20.0, telemetry),
                 driveDistance ));*/
-        schedule(new SequentialCommandGroup(raiseArmAndBucket, driveDistance));
+        schedule(new SequentialCommandGroup(raiseArmAndBucket, driveDistance.withTimeout(1500)));
         register(telemetrySystem);
 
     }

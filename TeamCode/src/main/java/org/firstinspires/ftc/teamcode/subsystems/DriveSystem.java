@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -7,8 +8,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
+@Config
 public class DriveSystem extends SubsystemBase {
+    public static TelemetrySystem.TelemetryLevel telemetryLevel= TelemetrySystem.TelemetryLevel.MATCH;
+
     private DcMotorEx leftFrontDrive = null;
     private DcMotorEx rightFrontDrive = null;
     private DcMotorEx leftBackDrive = null;
@@ -17,6 +22,7 @@ public class DriveSystem extends SubsystemBase {
     private final double encoderCountsPerRevolution = 28;
     private final double encoderPositionsPerRevolution = encoderCountsPerRevolution * 4;
     private Telemetry telemetry;
+
 
     public  DriveSystem(HardwareMap hardwareMap){
         leftFrontDrive = hardwareMap.get(DcMotorEx.class, "LeftFrontDrive");
@@ -48,13 +54,25 @@ public class DriveSystem extends SubsystemBase {
     }
 
     public double getRightFrontEncoder(){
-        return Math.abs(rightFrontDrive.getCurrentPosition());
+        return rightFrontDrive.getCurrentPosition();
     }
     @Override
     public void periodic(){
-
+        switch (telemetryLevel) {
+            case DEBUG:
+                telemetry.addData(this.getName() + ":rightFront:Current", rightFrontDrive.getCurrent(CurrentUnit.AMPS));
+                telemetry.addData(this.getName() + ":leftFront:Current", leftFrontDrive.getCurrent(CurrentUnit.AMPS));
+                telemetry.addData(this.getName() + ":rightBack:Current", rightBackDrive.getCurrent(CurrentUnit.AMPS));
+                telemetry.addData(this.getName() + ":leftBack:Current", leftBackDrive.getCurrent(CurrentUnit.AMPS));
+            case DIAGNOSTIC:
+                telemetry.addData(this.getName() + ":rightFront:getCurrentPosition", rightFrontDrive.getCurrentPosition());
+            case CONFIG:
+            case MATCH:
+                break;
+        }
     }
 
     public void resetEncoders(){
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

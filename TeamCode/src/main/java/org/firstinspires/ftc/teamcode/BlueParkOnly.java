@@ -31,7 +31,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSystem;
 import org.firstinspires.ftc.teamcode.subsystems.TelemetrySystem;
 import org.firstinspires.ftc.teamcode.subsystems.TubeSpinnerSystem;
 
-@Autonomous(name = "Blue Park Only", group = "1")
+@Autonomous(name = "Blue Park Only", group = "2")
 public class BlueParkOnly extends CommandOpMode {
 
 
@@ -69,7 +69,7 @@ public class BlueParkOnly extends CommandOpMode {
                 new DoNothingForTime(5000,telemetry));*/
         schedule(new SequentialCommandGroup(
                 raiseArmAndBucket,
-                driveDistance));
+                driveDistance.withTimeout(1500)));
 
         register(telemetrySystem);
 

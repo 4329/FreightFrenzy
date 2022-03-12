@@ -29,8 +29,8 @@ public class ArmSystem extends SubsystemBase {
     public double MAX_ARM_DEGREES = 55.0;
     public static double TRAVEL_DEGREES=5;
     public static double LEVEL_1_DEGREES = 15;
-    public static double LEVEL_2_DEGREES = 30;
-    public static double LEVEL_3_DEGREES = 50;
+    public static double LEVEL_2_DEGREES = 35;
+    public static double LEVEL_3_DEGREES = 60;
     public static double MAX_ARM_POWER = 0.75;
     public static double kP = 0.05;
     public static double kI= 0.01;
